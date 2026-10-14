@@ -1,1 +1,1 @@
-# KijaniKiosk DevOps Foundation
+# kijaniosk-devops-foundation
