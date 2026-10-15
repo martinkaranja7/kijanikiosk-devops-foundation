@@ -1,0 +1,20 @@
+# Expected dirty conditions found in pre-provisioning audit:
+# - kk-api already exists (UID 998): handled in Phase 2 by id check
+# - /opt/kijanikiosk/shared/logs ACLs missing kk-payments entry: fixed in Phase 3
+# - ufw has extra deny 3001 rule from Thursday remediation: reset in Phase 5
+# - Package hold active on curl: handled in Phase 1 pin verification
+# - systemd unit kk-api.service exists with weaker hardening: overridden in Phase 5
+# - Journal storage currently volatile/default: configured for persistence in Phase 6
+
+kk-api:x:998:998::/home/kk-api:/bin/false
+kk-payments:x:999:999::/home/kk-payments:/bin/false
+kk-logs:x:997:997::/home/kk-logs:/bin/false
+kijanikiosk:x:1001:kk-api,kk-payments,kk-logs
+
+total 20
+drwxr-xr-x  5 root root 4096 Oct 12 10:00 .
+drwxr-xr-x  3 root root 4096 Oct 10 08:00 ..
+drwxrwx---+ 4 root root 4096 Oct 14 15:30 shared
+drwxr-xr-x  2 root root 4096 Oct 12 11:00 config
+
+# (Include additional mock output for getfacl, ufw status, etc.)
