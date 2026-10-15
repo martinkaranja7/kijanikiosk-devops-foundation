@@ -1,0 +1,62 @@
+terraform {
+  required_version = ">= 1.0.0"
+  required_providers {
+      source  = "larstwiest/multipass"
+      version = "~> 1.4.0"
+    }
+  }
+
+  backend "s3" {
+    bucket                      = "kijanikiosk-tfstate"
+    key                         = "week4/terraform.tfstate"
+    region                      = "us-east-1"
+    endpoint                    = "http://localhost:9000"
+    access_key                  = "minioadmin"
+    secret_key                  = "minioadmin"
+    skip_credentials_validation = true
+    skip_metadata_api_check     = true
+    skip_requesting_account_id  = true
+    use_path_style              = true
+  }
+}
+
+provider "multipass" {}
+
+module "app_server" {
+  for_each = var.server_configs
+
+  source      = "./modules/app_server"
+  server_name = "kijanikiosk-${each.key}"
+  cpu         = each.value.cpu
+}terraform {
+  required_version = ">= 1.0.0"
+  required_providers {
+    multipass = {
+      source  = "larstwiest/multipass"
+      version = "~> 1.4.0"
+    }
+  }
+
+  backend "s3" {
+    bucket                      = "kijanikiosk-tfstate"
+    key                         = "week4/terraform.tfstate"
+    region                      = "us-east-1"
+    endpoint                    = "http://localhost:9000"
+    skip_credentials_validation = true
+    skip_metadata_api_check     = true
+    skip_requesting_account_id  = true
+    force_path_style            = true
+  }
+}
+
+provider "multipass" {}
+
+module "app_server" {
+  for_each = var.server_configs
+
+  source      = "./modules/app_server"
+  server_name = "kijanikiosk-${each.key}"
+  cpu         = each.value.cpu
+  memory      = each.value.memory
+  disk        = each.value.disk
+}

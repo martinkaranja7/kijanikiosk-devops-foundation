@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# Requirement 3: Exit immediately if any command fails
+set -e
+
+# Default to multipass path mode if not specified
+PATH_MODE=${1:-multipass}
+
+echo "=========================================="
+echo "Step 1: Running Terraform Apply..."
+echo "=========================================="
+cd terraform
+terraform apply -auto-approve
+cd ..
+
+echo "=========================================="
+echo "Step 2: Extracting Server IPs dynamically..."
+echo "=========================================="
+if [ "$PATH_MODE" = "multipass" ]; then
+  API_IP=$(multipass info kijanikiosk-api | grep IPv4 | awk '{print $2}')
+  PAYMENTS_IP=$(multipass info kijanikiosk-payments | grep IPv4 | awk '{print $2}')
+  LOGS_IP=$(multipass info kijanikiosk-logs | grep IPv4 | awk '{print $2}')
+else
+  # Cloud path fallback using terraform outputs
+  cd terraform
+  API_IP=$(terraform output -raw api_server_ip)
+  PAYMENTS_IP=$(terraform output -raw payments_server_ip)
+  LOGS_IP=$(terraform output -raw logs_server_ip)
+  cd ..
+fi
+
+echo "Extracted IPs:"
+echo " - API:      $API_IP"
+echo " - Payments: $PAYMENTS_IP"
+echo " - Logs:     $LOGS_IP"
+
+echo "=========================================="
+echo "Step 3: Writing dynamic inventory.ini..."
+echo "=========================================="
+cat << EOF > ansible/inventory.ini
+[kijanikiosk]
+api ansible_host=$API_IP
+payments ansible_host=$PAYMENTS_IP
+logs ansible_host=$LOGS_IP
+
+[kijanikiosk:vars]
+ansible_user=ubuntu
+ansible_ssh_private_key_file=~/.ssh/id_rsa
+EOF
+
+echo "=========================================="
+echo "Step 4: Running Ansible Playbook..."
+echo "=========================================="
+cd ansible
+ansible-playbook -i inventory.ini kijanikiosk.yml
+cd ..
+
+echo "=========================================="
+echo "Pipeline completed successfully!"
+echo "=========================================="
+

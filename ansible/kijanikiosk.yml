@@ -1,0 +1,102 @@
+hosts: kijanikiosk
+  become: yes
+  tasks:
+    - name: Phase 1 - Update apt cache and install core packages
+      apt:
+        update_cache: yes
+        name:
+          - curl
+          - git
+          - ufw
+          - logrotate
+        state: present
+
+    - name: Phase 2 - Create service user for payments
+      user:
+        name: kk-payments
+        system: yes
+        shell: /bin/false
+        create_home: no
+      when: inventory_hostname == 'payments'
+
+    - name: Phase 3 - Create required directory structure
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: kk-payments
+        group: kk-payments
+        mode: '0750'
+      loop:
+        - "{{ app_base_dir }}"
+        - "{{ app_base_dir }}/config"
+        - "{{ app_base_dir }}/data"
+      when: inventory_hostname == 'payments'
+
+    - name: Phase 4 - Deploy environment configuration template
+      template:
+        src: payments-api.env.j2
+        dest: "{{ app_base_dir }}/config/payments-api.env"
+        owner: kk-payments
+        group: kk-payments
+        mode: '0640'
+      notify: restart kk-payments
+      when: inventory_hostname == 'payments'
+
+    - name: Phase 4 - Deploy systemd unit file template
+      template:
+        src: kk-payments.service.j2
+        dest: /etc/systemd/system/kk-payments.service
+        owner: root
+        group: root
+        mode: '0644'
+      notify: reload systemd and restart kk-payments
+      when: inventory_hostname == 'payments'
+
+    - name: Phase 5 - Configure UFW Firewall rules
+      ufw:
+        rule: allow
+        port: '22'
+        proto: tcp
+
+    - name: Phase 6 - Ensure journald persistence is enabled
+      lineinfile:
+        path: /etc/systemd/journald.conf
+        regexp: '^#?Storage='
+        line: 'Storage=persistent'
+      notify: restart journald
+
+    - name: Phase 7 - Configure logrotate for application logs
+      copy:
+        content: |
+          {{ app_base_dir }}/data/*.log {
+              daily
+              rotate 7
+              compress
+              missingok
+              notifempty
+          }
+        dest: /etc/logrotate.d/kijanikiosk
+        owner: root
+        group: root
+        mode: '0644'
+
+  handlers:
+    - name: restart kk-payments
+      systemd:
+        name: kk-payments
+        state: restarted
+        daemon_reload: yes
+      when: inventory_hostname == 'payments'
+
+    - name: reload systemd and restart kk-payments
+      systemd:
+        name: kk-payments
+        state: restarted
+        daemon_reload: yes
+      when: inventory_hostname == 'payments'
+
+    - name: restart journald
+      systemd:
+        name: systemd-journald
+        state: restarted
+

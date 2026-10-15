@@ -1,0 +1,22 @@
+WorkingDirectory=/opt/kijanikiosk
+ExecStart=/usr/bin/node /opt/kijanikiosk/app.js
+Restart=always
+
+# Requirement 5: Hardening Directives for Systemd Security Score < 2.5
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+NoNewPrivileges=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6
+RestrictNamespaces=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+
+# Environment file in a writable directory
+EnvironmentFile=/opt/kijanikiosk/config/payments-api.env
+
+[Install]
+WantedBy=multi-user.target
+
