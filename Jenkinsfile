@@ -23,7 +23,7 @@ pipeline {
         stage('Checkout & Setup') {
             steps {
                 script {
-                    SHORT_SHA = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+                    SHORT_SHA = env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : 'latest'
                     echo "Starting build for ${APP_NAME} at commit ${SHORT_SHA}"
                 }
             }
@@ -74,7 +74,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'nexus-npm-credentials', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
                     sh '''
                         set +x
-                        SHORT_SHA=$(git rev-parse --short HEAD)
+                        SHORT_SHA=${GIT_COMMIT:0:7}
                         BASE_VERSION=$(node -p "require('./package.json').version")
                         UNIQUE_VERSION="${BASE_VERSION}-${SHORT_SHA}"
                         
