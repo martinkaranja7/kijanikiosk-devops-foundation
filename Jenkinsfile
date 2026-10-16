@@ -73,6 +73,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'nexus-npm-credentials', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
                     sh '''
                         set +x
+                        export npm_config_cache=/tmp/.npm
                         SHORT_SHA=${GIT_COMMIT:0:7}
                         BASE_VERSION=$(node -p "require('./package.json').version")
                         UNIQUE_VERSION="${BASE_VERSION}-${SHORT_SHA}"
