@@ -5,37 +5,36 @@ pipeline {
             args '-v /tmp:/tmp --net=host'
         }
     }
-    
+
     options {
         timeout(time: 10, unit: 'MINUTES')
         disableConcurrentBuilds()
         ansiColor('xterm')
     }
-    
+
     environment {
         NEXUS_URL = 'http://172.17.0.1:8081'
         NEXUS_REPO = 'npm-hosted'
         APP_NAME = 'kijanikiosk-payments'
-        SHORT_SHA = ''
     }
-    
+
     stages {
         stage('Checkout & Setup') {
             steps {
                 script {
-                    SHORT_SHA = env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : 'latest'
-                    echo "Starting build for ${APP_NAME} at commit ${SHORT_SHA}"
+                    def shortSha = env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : 'latest'
+                    echo "Starting build for ${APP_NAME} at commit ${shortSha}"
                 }
             }
         }
-        
+
         stage('Lint') {
             steps {
                 echo 'Executing Fail-Fast Code Linting...'
                 sh 'npm run lint || true'
             }
         }
-        
+
         stage('Build') {
             steps {
                 echo 'Compiling Application Artifacts...'
@@ -43,7 +42,7 @@ pipeline {
                 stash name: 'build-artifact', includes: 'dist/**, package.json'
             }
         }
-        
+
         stage('Verify (Parallel)') {
             parallel {
                 stage('Unit & Integration Tests') {
@@ -60,7 +59,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Archive') {
             steps {
                 echo 'Archiving and Fingerprinting Local Build Output...'
@@ -68,7 +67,7 @@ pipeline {
                 archiveArtifacts artifacts: 'dist/**', fingerprint: true
             }
         }
-        
+
         stage('Publish') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'nexus-npm-credentials', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
@@ -95,7 +94,7 @@ pipeline {
             }
         }
     }
-    
+
     post {
         always {
             echo 'Pipeline completed. Cleaning workspace...'
