@@ -1,0 +1,7 @@
+Checked firewall rules: SSH and HTTP are open, and port 3001 is safely blocked externally.
+
+Verified the kk-api user is present.
+
+Confirmed the health check JSON file is generated and in place.
+
+Ran the post-rotation test: kk-api can still write logs without any permission issues. All checks green
