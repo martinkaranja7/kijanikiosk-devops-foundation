@@ -1,0 +1,212 @@
+Started by user Martin
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/caches/git-4e1217d5dd56f86650cf2ced7511d497/.git # timeout=10
+Setting origin to https://github.com/martinkaranja7/kijanikiosk-devops-foundation
+ > git config remote.origin.url https://github.com/martinkaranja7/kijanikiosk-devops-foundation # timeout=10
+Fetching origin...
+Fetching upstream changes from origin
+ > git --version # timeout=10
+ > git --version # 'git version 2.53.0'
+ > git config --get remote.origin.url # timeout=10
+ > git fetch --no-tags --force --progress -- origin +refs/heads/*:refs/remotes/origin/* # timeout=10
+Seen branch in repository origin/develop
+Seen branch in repository origin/feature/starter-kit-files
+Seen branch in repository origin/feature/week3-production-foundation
+Seen branch in repository origin/feature/week4-clean
+Seen branch in repository origin/feature/week4-iac-pipeline
+Seen branch in repository origin/feature/week5-ci-pipeline
+Seen branch in repository origin/main
+Seen 7 remote branches
+Obtained Jenkinsfile from f68d9d1d225efcd90a258a4f2d4c49867468fdb1
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/lib/jenkins/workspace/dation_feature_week5-ci-pipeline
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+Cloning the remote Git repository
+Cloning with configured refspecs honoured and without tags
+Cloning repository https://github.com/martinkaranja7/kijanikiosk-devops-foundation
+ > git init /var/lib/jenkins/workspace/dation_feature_week5-ci-pipeline # timeout=10
+Fetching upstream changes from https://github.com/martinkaranja7/kijanikiosk-devops-foundation
+ > git --version # timeout=10
+ > git --version # 'git version 2.53.0'
+ > git fetch --no-tags --force --progress -- https://github.com/martinkaranja7/kijanikiosk-devops-foundation +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/martinkaranja7/kijanikiosk-devops-foundation # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+Checking out Revision f68d9d1d225efcd90a258a4f2d4c49867468fdb1 (feature/week5-ci-pipeline)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f f68d9d1d225efcd90a258a4f2d4c49867468fdb1 # timeout=10
+Commit message: "fix: route npm cache to writable /tmp directory"
+ > git rev-list --no-walk 7161a1a489d42b2e066e7ca352cb39231a1676c7 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] isUnix
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ docker inspect -f . node:18.20.4-alpine
+.
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] withDockerContainer
+Jenkins does not seem to be running inside a container
+$ docker run -t -d -u 112:115 -v /tmp:/tmp --net=host -w /var/lib/jenkins/workspace/dation_feature_week5-ci-pipeline -v /var/lib/jenkins/workspace/dation_feature_week5-ci-pipeline:/var/lib/jenkins/workspace/dation_feature_week5-ci-pipeline:rw,z -v /var/lib/jenkins/workspace/dation_feature_week5-ci-pipeline@tmp:/var/lib/jenkins/workspace/dation_feature_week5-ci-pipeline@tmp:rw,z -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** node:18.20.4-alpine cat
+$ docker top bb69d865706fabf89d53a36168dad8b4dea3e4cf7dfd063658dce0ed92aa3910 -eo pid,comm
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timeout
+Timeout set to expire in 10 min
+[Pipeline] {
+[Pipeline] ansiColor
+[Pipeline] {
+
+[Pipeline] stage
+[Pipeline] { (Checkout & Setup)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] echo
+Starting build for kijanikiosk-payments at commit f68d9d1
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Lint)
+[Pipeline] echo
+Executing Fail-Fast Code Linting...
+[Pipeline] sh
++ npm run lint
+
+> kijanikiosk-payments@1.0.0 lint
+> echo 'Running lint...' && exit 0
+
+Running lint...
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] echo
+Compiling Application Artifacts...
+[Pipeline] sh
++ npm run build
+
+> kijanikiosk-payments@1.0.0 build
+> mkdir -p dist && echo 'console.log("built");' > dist/app.js
+
+[Pipeline] stash
+Stashed 2 file(s)
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Verify (Parallel))
+[Pipeline] parallel
+[Pipeline] { (Branch: Unit & Integration Tests)
+[Pipeline] { (Branch: Security Audit)
+[Pipeline] stage
+[Pipeline] { (Unit & Integration Tests)
+[Pipeline] stage
+[Pipeline] { (Security Audit)
+[Pipeline] echo
+Running Test Suite...
+[Pipeline] sh
+[Pipeline] echo
+Running Dependency Security Audit...
+[Pipeline] sh
++ npm test
+
+> kijanikiosk-payments@1.0.0 test
+> echo 'Running tests...' && exit 0
+
+Running tests...
+[Pipeline] }
++ echo 'Audit passed'
+Audit passed
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // parallel
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Archive)
+[Pipeline] echo
+Archiving and Fingerprinting Local Build Output...
+[Pipeline] unstash
+[Pipeline] archiveArtifacts
+Archiving artifacts
+Recording fingerprints
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Publish)
+[Pipeline] withCredentials
+Masking supported pattern matches of $NEXUS_PASS
+[Pipeline] {
+[Pipeline] sh
++ set +x
+Setting package version to 1.0.0-f68d9d1
+v1.0.0-f68d9d1
+npm notice
+npm notice package: kijanikiosk-payments@1.0.0-f68d9d1
+npm notice Tarball Contents
+npm notice 3.7kB Jenkinsfile
+npm notice 30B README.md
+npm notice 22B dist/app.js
+npm notice 336B package.json
+npm notice Tarball Details
+npm notice name: kijanikiosk-payments
+npm notice version: 1.0.0-f68d9d1
+npm notice filename: kijanikiosk-payments-1.0.0-f68d9d1.tgz
+npm notice package size: 1.6 kB
+npm notice unpacked size: 4.0 kB
+npm notice shasum: fa34ad159491d030611a01c7739193a72fbcad17
+npm notice integrity: sha512-2gVf3vCj4S17b[...]+jdbc0SyxlPRA==
+npm notice total files: 4
+npm notice
+npm notice Publishing to http://172.17.0.1:8081/repository/npm-hosted/ with tag latest and default access
++ kijanikiosk-payments@1.0.0-f68d9d1
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] echo
+Pipeline completed. Cleaning workspace...
+[Pipeline] cleanWs
+[WS-CLEANUP] Deleting project workspace...
+[WS-CLEANUP] Deferred wipeout is used...
+[WS-CLEANUP] done
+[Pipeline] echo
+TRANSITION: Pipeline state changed from previous run.
+[Pipeline] echo
+SUCCESS: Versioned artifact published to http://172.17.0.1:8081/#browse/browse:npm-hosted
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+
+[Pipeline] // ansiColor
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+$ docker stop --time=1 bb69d865706fabf89d53a36168dad8b4dea3e4cf7dfd063658dce0ed92aa3910
+$ docker rm -f --volumes bb69d865706fabf89d53a36168dad8b4dea3e4cf7dfd063658dce0ed92aa3910
+[Pipeline] // withDockerContainer
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS

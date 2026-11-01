@@ -1,0 +1,7 @@
+=== DEPLOYMENT STATUS ===
+NAME                     READY   UP-TO-DATE   AVAILABLE   AGE
+kk-payments-deployment   0/2     2            0           11m
+=== PODS STATUS ===
+NAME                                      READY   STATUS             RESTARTS      AGE
+kk-payments-deployment-577964c8bf-dwjd7   0/1     CrashLoopBackOff   7 (17s ago)   11m
+kk-payments-deployment-577964c8bf-ft9zm   0/1     CrashLoopBackOff   7 (51s ago)   11m

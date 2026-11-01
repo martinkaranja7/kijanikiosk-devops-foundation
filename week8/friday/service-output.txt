@@ -1,0 +1,4 @@
+=== ENDPOINTS ===
+NAME                  ENDPOINTS   AGE
+kk-payments-service               14m
+=== NODEPORT CURL HEALTH CHECK ===
