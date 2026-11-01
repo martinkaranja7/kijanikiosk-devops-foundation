@@ -1,0 +1,7 @@
+=== DOCKER BUILD & SIZE ===
+kijani-registry-credentials/kk-payments:v1.0.0-build1                                                 a63e0edfbcea       87.4MB         22.5MB        
+localhost:5000/kk-payments:latest                                                                     4d78a2c89904        190MB         46.4MB        
+=== WHOAMI CHECK ===
+kijani
+=== TSC CHECK ===
+Not found (Correct)

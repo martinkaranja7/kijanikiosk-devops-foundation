@@ -1,0 +1,14 @@
+{
+  "name": "kk-payments",
+  "version": "1.0.0",
+  "description": "KijaniKiosk Payments Service",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "mkdir -p dist && echo 'console.log(\"Payments service running\");' > dist/main.js",
+    "start": "node dist/main.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {}
+}

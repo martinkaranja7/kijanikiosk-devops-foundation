@@ -1,0 +1,7 @@
+Tag used: v1.0.0-build1
+=== LOCAL DOCKER IMAGE STATUS ===
+kijani-registry-credentials/kk-payments:v1.0.0-build1                                                 a63e0edfbcea       87.4MB         22.5MB        
+localhost:5000/kk-payments:1.0.0-5bb7ae5                                                              a63e0edfbcea       87.4MB         22.5MB        
+localhost:5000/kk-payments:latest                                                                     4d78a2c89904        190MB         46.4MB        
+=== MINIKUBE IMAGE CACHE STATUS ===
+docker.io/library/kk-payments:v1.0.0-build1
